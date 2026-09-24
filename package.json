@@ -1,0 +1,25 @@
+{
+  "name": "zotero-mcp",
+  "version": "1.0.0",
+  "description": "Zero-dependency MCP server for the Zotero Web API v3",
+  "type": "module",
+  "bin": {
+    "zotero-mcp": "server.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "bash test/run.sh"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "zotero",
+    "model-context-protocol",
+    "bibliography",
+    "citation",
+    "research"
+  ],
+  "license": "MIT"
+}
