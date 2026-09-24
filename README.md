@@ -139,10 +139,39 @@ docker run --rm -v "$PWD:/app" -w /app node:20-alpine \
 
 ## Déploiement Windows (.exe autonome)
 
-Comme `kanka-mcp` : le même `windows/build.mjs` (Node Single Executable
-Application) peut être adapté pour produire un `zotero-mcp.exe` embarquant le
-runtime Node (machine de build : Node >= 20 ; machine cible : rien).
-En attendant, l'app locale ou le mode stdio avec Node suffisent.
+`dist\zotero-mcp.exe` est un **Single Executable Application** Node : le
+runtime est embarqué dans l'exe, la machine cible n'a besoin de **rien**
+(ni Node, ni npm). Il démarre en HTTP sur `http://127.0.0.1:3334` et lit
+`zotero-mcp.json` placé à côté de lui.
+
+```powershell
+# Machine de build (Node >= 20 + npm) :
+node windows\build.mjs       # -> dist\zotero-mcp.exe (+ smoke test automatique)
+
+# Config : copier le zotero-mcp.json avec la clé à côté de l'exe
+# Lancer :
+dist\zotero-mcp.exe          # -> http://127.0.0.1:3334
+curl http://127.0.0.1:3334/  # {"status":"ok",...}
+
+# Démarrage automatique à l'ouverture de session (tache planifiée masquée) :
+powershell -ExecutionPolicy Bypass -File windows\install-autostart.ps1
+#   Retirer : ... -Uninstall
+```
+
+Re-exécuter `build.mjs` après chaque modification de `server.js` : l'exe est
+un instantané, il ne lit pas `server.js` au runtime.
+
+Machine sans Node installé : un Node 20 **portable** (zip extrait, aucune
+installation système, ignoré par git) suffit :
+
+```bash
+curl -LO https://nodejs.org/dist/v20.20.2/node-v20.20.2-win-x64.zip
+tar -xf node-v20.20.2-win-x64.zip          # bsdtar Windows, pas GNU tar
+PATH="$PWD/node-v20.20.2-win-x64:$PATH" ./node-v20.20.2-win-x64/node.exe windows/build.mjs
+```
+
+Note : l'injection postject invalide la signature Microsoft du binaire Node
+(avertissement « The signature seems corrupted ») — normal et attendu.
 
 ## Limites
 

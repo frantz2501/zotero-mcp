@@ -1,5 +1,6 @@
 node_modules/
 dist/
+node-v20*-win-x64/
 *.log
 .DS_Store
 .env

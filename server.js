@@ -43,12 +43,19 @@ const SERVER_INFO = { name: 'zotero-mcp', version: '1.0.0' };
 // --- Local app config file (env vars always win over file values)
 function loadConfigFile() {
   const candidates = [];
+  // Script mode (node server.js): config next to server.js.
   try { candidates.push(path.join(path.dirname(process.argv[1] || ''), 'zotero-mcp.json')); } catch {}
+  // SEA exe mode: process.argv[1] does not point at the executable,
+  // but process.execPath does - config next to the .exe.
+  try { candidates.push(path.join(path.dirname(process.execPath), 'zotero-mcp.json')); } catch {}
   candidates.push(path.join(process.cwd(), 'zotero-mcp.json'));
   if (process.env.APPDATA) {
     candidates.push(path.join(process.env.APPDATA, 'zotero-mcp', 'config.json'));
   }
+  const seen = new Set();
   for (const p of candidates) {
+    if (!p || seen.has(p)) continue;
+    seen.add(p);
     try {
       if (fs.existsSync(p)) return { path: p, cfg: JSON.parse(fs.readFileSync(p, 'utf8')) };
     } catch (e) {
