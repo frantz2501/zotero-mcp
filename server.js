@@ -705,7 +705,7 @@ const tools = {
       const prefix = await libPrefix(a);
       const version = await libraryVersion(prefix);
       await zapi('DELETE', prefix + '/tags', {
-        query: { tag: a.tags.join('||') },
+        query: { tag: a.tags.join(' || ') },
         headers: { 'If-Unmodified-Since-Version': String(version) },
       });
       return { deleted: a.tags, library_version: lastMeta.libraryVersion };
